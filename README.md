@@ -16,4 +16,5 @@ I assumed that each poll will last from 1 to 90 days and a voter will not be abl
 ## Test
 `$ npx hardhat test`
 
-
+## Start app
+`$ npm run start`

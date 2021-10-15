@@ -6,6 +6,7 @@ import("@nomiclabs/hardhat-ethers");
 import { HardhatUserConfig } from "hardhat/config";
 import dotenv from "dotenv";
 dotenv.config();
+import "./tasks/deploy";
 const { STAGING_ALCHEMY_KEY, PRIVATE_KEY } = process.env;
 
 // You need to export an object to set up your config
@@ -14,6 +15,7 @@ let config: HardhatUserConfig;
 
 export default config = {
   solidity: "0.8.0",
+  defaultNetwork: "rinkeby",
   networks: {
     rinkeby: {
       url: "https://eth-rinkeby.alchemyapi.io/v2/HlOva26nUmdqHLazOq_uDZTQrihf2hEy",

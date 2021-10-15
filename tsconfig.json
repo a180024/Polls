@@ -8,11 +8,11 @@
     "sourceMap": true,
     "outDir": "./dist",
     "strict": true,
-    "rootDirs": ["./scripts", "./test"],
+    "rootDirs": ["./test", "./tasks"],
     "esModuleInterop": true
   },
   "exclude": ["dist", "node_modules"],
-  "include": ["./test", "./src", "./scripts"],
+  "include": ["./test", "./tasks"],
   "files": ["./hardhat.config.ts"],
   "types": ["mocha"]
 }

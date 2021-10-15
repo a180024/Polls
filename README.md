@@ -5,12 +5,15 @@ Requirements:
 - [x] Allow anyone to vote on any active polls.
 - [x] Allow anyone to query results on any polls.
 
-```shell
-npx hardhat accounts
-npx hardhat compile
-npx hardhat clean
-npx hardhat test
-npx hardhat node
-node scripts/sample-script.js
-npx hardhat help
-```
+## Description of contract
+I created a struct each for the Poll and Poll Options. And also a mapping with pollId as key and an array of Option struct as value. Each timean poll is created, we save the area of options into the mapping and also create a Poll struct which is stored in an array.
+
+I assumed that each poll will last from 1 to 90 days and a voter will not be able to vote on the same poll twice. 
+
+## Deployment
+`$ npx hardhat deploy-contract`
+
+## Test
+`$ npx hardhat test`
+
+

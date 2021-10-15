@@ -14,6 +14,7 @@ contract Polls {
       uint voteCount;
     }
 
+    // pollId will follow the index of this array
     Poll[] public polls;
 
     // Mapping of pollId to an array of options

@@ -7,7 +7,6 @@ contract Polls {
       string name;
       uint expiryTime;
       address proposer;
-      uint[] optionIds;
     }
 
     struct Option {
@@ -16,8 +15,9 @@ contract Polls {
     }
 
     Poll[] public polls;
-    uint private _optionId;
-    mapping(uint => Option) public optionMapping;
+
+    // Mapping of pollId to an array of options
+    mapping(uint => Option[]) public optionMapping;
 
     mapping(address => mapping(uint=>bool)) public hasVotedOnPoll;
 
@@ -30,53 +30,55 @@ contract Polls {
       // Set Polls lifetime from 1 to 90 days
       require(86400 <= secondsToExpiry && secondsToExpiry <= 7776000, "Polls should last from 1 to 90 days.");
 
-      uint[] memory _optionsIds = new uint[](options.length); 
+      // Get the current pollId
+      uint currentPollId = getTotalPolls();
+
       for (uint i = 0; i < options.length; i++) {
-        // Create an Option struct for each option and store them in a mapping
-        optionMapping[_optionId] = Option({
+        // Create an Option struct for each option and store them in a mapping with pollId as Key
+        optionMapping[currentPollId].push(Option({
           name: options[i],
           voteCount: 0
-        });
-        // Save an array of optionIds associated with the poll
-        _optionsIds[i] = _optionId; 
-        _optionId++;
+        }));
       }
 
       // Keep track of all the polls details
       polls.push(Poll({
         name: name,
         expiryTime: block.timestamp + secondsToExpiry,
-        proposer: msg.sender,
-        optionIds: _optionsIds
+        proposer: msg.sender
       }));
 
-      emit NewPollCreated(msg.sender, name, polls.length - 1);
+      emit NewPollCreated(msg.sender, name, currentPollId);
     }
 
     // Allows anyone to vote on active polls 
-    function voteOnActivePoll(uint pollId, uint optionId) public {
+    /// @param optionNo refers to the option position in a poll. i.e. the 3rd option would be 3
+    function voteOnActivePoll(uint pollId, uint optionNo) public {
       Poll storage poll = polls[pollId];
       // Ensure that poll is active
       require(block.timestamp < poll.expiryTime, "Poll has expired.");
       // Ensure that voter has not voted on the same poll
-      require(!hasVotedOnPoll[msg.sender][pollId], "User has already voted on the current poll.");
+      require(hasVotedOnPoll[msg.sender][pollId] == false, "User has already voted on the current poll.");
 
       hasVotedOnPoll[msg.sender][pollId] = true;
 
-      // Map the option number in the poll with the actual optionId
-      Option storage option = optionMapping[poll.optionIds[optionId]];
+      // Map the option position in the poll with the actual optionId
+      Option storage option = optionMapping[pollId][optionNo];
       option.voteCount++;
     }
 
     // Allows anyone to query poll results
     function getPollVoteCount(uint pollId) public view returns (uint[] memory){
-      Poll memory poll = polls[pollId];
-      uint[] memory optionIds = poll.optionIds;
-      uint[] memory results = new uint[](optionIds.length);
-      for (uint i = 0; i <optionIds.length; i++) {
-        results[i] = optionMapping[optionIds[i]].voteCount;
-      } 
+      Option[] memory options = optionMapping[pollId];
+      uint noOfOptions = options.length;
+      uint[] memory results = new uint[](uint32(noOfOptions));
+      for (uint i = 0; i <noOfOptions; i++) {
+        results[i] = options[i].voteCount;
+      }
       return results;
     }
 
+    function getTotalPolls() public view returns (uint) {
+      return polls.length;
+    }
 }

@@ -11,7 +11,7 @@ I created a struct each for the Poll and Poll Options. And also a mapping with p
 I assumed that each poll will last from 1 hour to 1 week and a voter will not be able to vote on the same poll twice. 
 
 ## Demo
-I basic a simple frontend to access the contract.
+I deployed a basic frontend [here](https://gallant-montalcini-c2a5d9.netlify.app/) to access the contract deployed on Rinkeby network.
 
 ## Deployment
 `$ npx hardhat deploy-contract`

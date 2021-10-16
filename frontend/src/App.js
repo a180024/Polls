@@ -1,11 +1,13 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { ethers } from "ethers";
+import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import ReactLoading from "react-loading";
-import "./styles/App.css";
 
-// Pop-up to create new poll
-// Show Active and Inactive polls
-// Clicking polls show results and allow voting
+import "./styles/App.css";
+import NavBar from "./components/nav_bar";
+import CreatePage from "./pages/create";
+import PollsPage from "./pages/polls";
+import VotingPage from "./pages/voting";
+
 const App = () => {
   const [currentAccount, setCurrentAccount] = useState("");
   const [loading, setLoading] = useState(false);
@@ -117,18 +119,58 @@ const App = () => {
     );
   };
 
-  return (
-    <div className="App">
+  const HomePageUI = () => {
+    return (
       <div className="container">
         <div className="header-container">
           <p className="header gradient-text">Polling App</p>
-          <p className="sub-text">Create new polls and start voting now!</p>
-          {currentAccount === "" ? renderNotConnectedContainer() : false}
+          <p className="sub-text">Start voting or create new polls!</p>
+          {currentAccount === ""
+            ? renderNotConnectedContainer()
+            : renderCreatePoll()}
           <br />
           {loading && renderSpinnerUI()}
         </div>
       </div>
-    </div>
+    );
+  };
+
+  const renderCreatePoll = () => {
+    return (
+      <button className="cta-button connect-wallet-button">
+        <Link className="navbar-link" to="/create" style={{ marginRight: 0 }}>
+          CREATE POLL
+        </Link>
+      </button>
+    );
+  };
+
+  return (
+    <Router>
+      <div className="App">
+        <NavBar />
+        <Switch>
+          <Route exact path="/">
+            <HomePageUI />
+          </Route>
+          <Route exact path="/create">
+            <div className="container" style={{ backgroundColor: "white" }}>
+              <CreatePage />
+            </div>
+          </Route>
+          <Route exact path="/polls">
+            <div className="container" style={{ backgroundColor: "white" }}>
+              <PollsPage />
+            </div>
+          </Route>
+          <Route to="/polls/:pollId">
+            <div className="container" style={{ backgroundColor: "white" }}>
+              <VotingPage />
+            </div>
+          </Route>
+        </Switch>
+      </div>
+    </Router>
   );
 };
 

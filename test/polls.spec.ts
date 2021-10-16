@@ -1,4 +1,4 @@
-import { ethers, waffle } from "hardhat";
+import { ethers } from "hardhat";
 import chai, { expect } from "chai";
 import { solidity } from "ethereum-waffle";
 import { Signer, Contract, ContractFactory } from "ethers";
@@ -18,7 +18,7 @@ describe("Polls", function () {
   let addr1: Signer;
 
   // Test Data
-  const pollName = "Test";
+  const pollTitle = "Test";
   const options = ["A", "B", "C", "D", "E"];
   const voteCounts = [0, 0, 0, 0, 0];
 
@@ -29,45 +29,46 @@ describe("Polls", function () {
 
   async function createPoll(
     secondsToExpiry: number,
-    name: string,
+    title: string,
     options: string[]
   ) {
-    return deployedContract.createPoll(secondsToExpiry, name, options);
+    return deployedContract.createPoll(secondsToExpiry, title, options);
   }
 
   async function getPollVoteCounts(pollId: number): Promise<any[]> {
-    return deployedContract.getPollVoteCount(pollId);
+    const [voteCounts, _] = deployedContract.getOptionsDetails(pollId);
+    return voteCounts;
   }
 
   describe("Creating Poll", () => {
-    it("1 day Lifetime", async () => {
-      expect(await createPoll(86400, pollName, options))
+    it("1 hour Lifetime", async () => {
+      expect(await createPoll(3600, pollTitle, options))
         .to.emit(deployedContract, "NewPollCreated")
-        .withArgs(await owner.getAddress(), pollName, 0);
+        .withArgs(await owner.getAddress(), pollTitle, 0);
       const polls = await deployedContract.polls(0);
       expect(polls[0]).to.equal("Test");
     });
-    it("90 days Lifetime", async () => {
-      expect(await createPoll(7776000, pollName, options))
+    it("1 week Lifetime", async () => {
+      expect(await createPoll(604800, pollTitle, options))
         .to.emit(deployedContract, "NewPollCreated")
         .withArgs(await owner.getAddress(), "Test", 0);
       const polls = await deployedContract.polls(0);
       expect(polls[0]).to.equal("Test");
     });
-    it("Lifetime less than 1 day", async () => {
+    it("Lifetime less than 1 hour", async () => {
       try {
-        expect(await createPoll(86300, pollName, options));
+        expect(await createPoll(3500, pollTitle, options));
       } catch (err) {
         expect(
           err ===
-            "VM Exception while processing transaction: reverted with reason string 'Polls should last from 1 to 90 days.'"
+            "VM Exception while processing transaction: reverted with reason string 'Polls should last from 1 hour to 1 week'"
         );
       }
     });
   });
   describe("Voting on polls", () => {
     it("Poll is active", async () => {
-      await createPoll(86400, pollName, options);
+      await createPoll(3600, pollTitle, options);
       const pollVoteCounts = await getPollVoteCounts(0);
       expect(
         pollVoteCounts.map((v, i) => {
@@ -82,8 +83,8 @@ describe("Polls", function () {
       expect(newPollVoteCounts[0].toNumber()).to.equal(1);
     });
     it("Poll has expired", async () => {
-      await createPoll(86400, pollName, options);
-      await ethers.provider.send("evm_increaseTime", [86500]);
+      await createPoll(3600, pollTitle, options);
+      await ethers.provider.send("evm_increaseTime", [605800]);
 
       try {
         await deployedContract.voteOnActivePoll(0, 0);
@@ -95,7 +96,7 @@ describe("Polls", function () {
       }
     });
     it("Multiple people voting on an active poll", async () => {
-      await createPoll(86400, pollName, options);
+      await createPoll(3600, pollTitle, options);
       await deployedContract.voteOnActivePoll(0, 0);
       await deployedContract.connect(addr1).voteOnActivePoll(0, 1);
 
@@ -107,13 +108,10 @@ describe("Polls", function () {
       ).to.deep.equal([1, 1, 0, 0, 0]);
     });
     it("Trying to vote on the same poll twice should revert", async () => {
-      await createPoll(86400, pollName, options);
+      await createPoll(3600, pollTitle, options);
       await deployedContract.voteOnActivePoll(0, 0);
 
-      const hasVotedOnPoll = await deployedContract.hasVotedOnPoll(
-        await owner.getAddress(),
-        0
-      );
+      await deployedContract.hasVotedOnPoll(await owner.getAddress(), 0);
 
       try {
         await deployedContract.voteOnActivePoll(0, 0);
@@ -127,5 +125,9 @@ describe("Polls", function () {
       const pollVoteCounts = await getPollVoteCounts(0);
       expect(pollVoteCounts[0].toNumber()).to.equal(1);
     });
+  });
+  describe("Helper Functions ", () => {
+    it("getPollsDetails should return an array of details", async () => {});
+    it("getOptionsDetails should return an array of details", async () => {});
   });
 });

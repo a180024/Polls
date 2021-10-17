@@ -41,6 +41,7 @@ describe("Polls", function () {
   }
 
   describe("Creating Poll", () => {
+    this.timeout(50000);
     it("1 hour Lifetime", async () => {
       expect(await createPoll(3600, pollTitle, options))
         .to.emit(deployedContract, "NewPollCreated")

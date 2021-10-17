@@ -59,7 +59,7 @@ contract Polls {
     }
 
     /**
-     * @notice Allows anyone to vote on active polls
+     * @notice allows anyone to vote on active polls
      * @param pollId refers to the index of the poll in the poll array
      * @param optionNo refers to the option position in a poll. i.e. the 3rd option would be 3
      */
@@ -78,7 +78,15 @@ contract Polls {
     }
 
     /** 
-     * @notice allows anyone to query poll results
+     * @notice query the total number of polls
+     * @return total number of polls
+     */
+    function getTotalPolls() public view returns (uint) {
+      return polls.length;
+    }
+
+    /** 
+     * @notice query the fields of the options in a poll
      * @param pollId refers to the index of the poll in the poll array
      * @return array of votes count for each option
      * @return array of option title 
@@ -96,15 +104,7 @@ contract Polls {
     }
 
     /** 
-     * @notice allows anyone to query the total number of polls
-     * @return total number of polls
-     */
-    function getTotalPolls() public view returns (uint) {
-      return polls.length;
-    }
-
-    /** 
-     * @notice allows anyone to query the total number of polls
+     * @notice query the fields of a poll
      * @return uint array of pollIds
      * @return string array of pollTitles
      * @return address array of proposer

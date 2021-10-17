@@ -13,6 +13,8 @@ I assumed that each poll will last from 1 hour to 1 week and a voter will not be
 ## Demo
 I deployed a basic frontend [here](https://gallant-montalcini-c2a5d9.netlify.app/) to access the contract deployed on Rinkeby network.
 
+https://user-images.githubusercontent.com/57989149/137618463-c65de9bc-bb72-47f5-8978-6dc8ce952134.mov
+
 ## Deployment
 `$ npx hardhat deploy-contract`
 

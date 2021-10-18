@@ -96,6 +96,7 @@ contract Polls {
       uint noOfOptions = options.length;
       uint[] memory votesCount = new uint[](uint32(noOfOptions));
       string[] memory optionTitles = new string[](uint32(noOfOptions));
+
       for (uint i = 0; i <noOfOptions; i++) {
         votesCount[i] = options[i].voteCount;
         optionTitles[i] = options[i].title;

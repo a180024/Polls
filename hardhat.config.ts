@@ -18,10 +18,8 @@ export default config = {
   defaultNetwork: "rinkeby",
   networks: {
     rinkeby: {
-      url: "https://eth-rinkeby.alchemyapi.io/v2/HlOva26nUmdqHLazOq_uDZTQrihf2hEy",
-      accounts: [
-        "0f4ce7d90f4e880fb70a9a0caf6e2baaea19ccdf6f60de6dc2032067516a35c4",
-      ],
+      url: STAGING_ALCHEMY_KEY,
+      accounts: [`0x${PRIVATE_KEY}`],
     },
   },
 };
